@@ -3,7 +3,7 @@ export const insertTodo = ({ commit }, todo) => {
 }
 
 export const updateTodoStatus = ({ commit }, data) => {
-  commit('UPDATE_TODO', { data })
+  commit('UPDATE_TODO_STATUS', { data })
 }
 
 export const updateTodoTitle = ({ commit }, data) => {

@@ -1,7 +1,10 @@
 import _ from 'lodash'
+
+const STORAGE_TODOS_KEY = 'todos'
+
 // state
 const state = {
-  all: window.localStorage.getItem('todos') ? JSON.parse(window.localStorage.getItem('todos')) : []
+  all: window.localStorage.getItem(STORAGE_TODOS_KEY) ? JSON.parse(window.localStorage.getItem(STORAGE_TODOS_KEY)) : []
 }
 
 // update state
@@ -9,6 +12,8 @@ const updateState = (state, todo) => {
   var index = _.indexOf(state.all, _.find(state.all, {id: todo.id}))
   state.all.splice(index, 1, todo)
 }
+
+// update local storage
 const updateLocalStorage = (key, value) => {
   window.localStorage.setItem(key, value)
 }
@@ -17,28 +22,21 @@ const updateLocalStorage = (key, value) => {
 const mutations = {
   'SAVE_TODO' (state, { todo }) {
     state.all.unshift(todo)
-    updateLocalStorage('todos', JSON.stringify(state.all))
+    updateLocalStorage(STORAGE_TODOS_KEY, JSON.stringify(state.all))
   },
-  'UPDATE_TODO' (state, { data }) {
-    let todo = data.todo
-    let status = data.status
-    todo.status = status
-    updateState(state, todo)
-    updateLocalStorage('todos', JSON.stringify(state.all))
+  'UPDATE_TODO_STATUS' (state, { data }) {
+    data.todo.completed = data.completed
+    updateState(state, data.todo)
+    updateLocalStorage(STORAGE_TODOS_KEY, JSON.stringify(state.all))
   },
   'UPDATE_TODO_TITLE' (state, { data }) {
-    let todo = data.todo
-    let title = data.title
-    todo.title = title
-    updateState(state, todo)
-    updateLocalStorage('todos', JSON.stringify(state.all))
+    data.todo.title = data.title
+    updateState(state, data.todo)
+    updateLocalStorage(STORAGE_TODOS_KEY, JSON.stringify(state.all))
   },
   'DELETE_TODO' (state, { todo }) {
-    state.all = _.remove(state.all, (item) => {
-      return item.id !== todo.id
-    })
-    console.log(state.all)
-    updateLocalStorage('todos', JSON.stringify(state.all))
+    state.all = _.remove(state.all, (item) => { return item.id !== todo.id })
+    updateLocalStorage(STORAGE_TODOS_KEY, JSON.stringify(state.all))
   }
 }
 

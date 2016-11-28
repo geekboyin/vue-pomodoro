@@ -1,8 +1,9 @@
 <template>
-  <li class="todo-item" :class="todoClass">
-    <div class="todo-item__form" v-if="todo == editedTodo">
+  <li class="todo-item" :class="{ completed: todo.completed }">
+    <div class="todo-item__form" v-if="editing">
       <input type="text"
              :value="todo.title"
+             v-focus="editing"
              @keyup.enter="saveTodo"
              @keyup.esc="cancelEditing">
       <nav class="edit-action">
@@ -12,12 +13,12 @@
     </div>
 
 
-    <template v-if="todo != editedTodo">
+    <template v-if="!editing">
       <span v-text="todo.title" class="title"></span>
       <span class="action">
-        <span class="mark-done" title="Complete" @click="done(todo)" v-if="todo.status === 'incomplete'"><i class="ion-checkmark"></i></span>
-        <span class="mark-undone" title="Redo" @click="undone(todo)" v-if="todo.status === 'complete'"><i class="ion-refresh"></i></span>
-        <span class="mark-edit" title="Edit" @click="edit(todo)"><i class="ion-edit"></i></span>
+        <span class="mark-done" title="Complete" @click="done(todo)" v-if="! todo.completed"><i class="ion-checkmark"></i></span>
+        <span class="mark-undone" title="Redo" @click="undone(todo)" v-if="todo.completed"><i class="ion-refresh"></i></span>
+        <span class="mark-edit" title="Edit" @click="editing = true"><i class="ion-edit"></i></span>
         <span class="mark-trash" title="Delete" @click="trash(todo)"><i class="ion-trash-a"></i></span>
       </span>
     </template>
@@ -29,27 +30,30 @@
   export default {
     props: ['todo'],
     computed: {
-      todoClass () {
-        return this.todo.status === 'complete' ? 'complete' : ''
-      }
     },
     data () {
       return {
-        editedTodo: null
+        editing: false
+      }
+    },
+    directives: {
+      focus (el, { value }, { context }) {
+        if (value) {
+          context.$nextTick(() => {
+            el.focus()
+          })
+        }
       }
     },
     methods: {
       done (todo) {
-        this.$store.dispatch('updateTodoStatus', { todo: todo, status: 'complete' })
+        this.$store.dispatch('updateTodoStatus', { todo: todo, completed: true })
       },
       undone (todo) {
-        this.$store.dispatch('updateTodoStatus', { todo: todo, status: 'incomplete' })
-      },
-      edit (todo) {
-        this.editedTodo = todo
+        this.$store.dispatch('updateTodoStatus', { todo: todo, completed: false })
       },
       cancelEditing () {
-        this.editedTodo = null
+        this.editing = false
       },
       saveTodo (event) {
         let form = $(event.currentTarget).parents('.todo-item__form')
@@ -57,7 +61,7 @@
         if (!value) {
           return
         }
-        this.editedTodo = null
+        this.editing = false
         this.$store.dispatch('updateTodoTitle', { todo: this.todo, title: value })
       },
       trash (todo) {
@@ -71,11 +75,14 @@
 </script>
 
 <style lang="scss" scoped>
+  @import './../../sass/variable';
+  @import './../../sass/mixins';
+
   .color-success {
-    color: #16c98d;
+    color: $success_color;
   }
   .color-danger {
-    color: #F44336;
+    color: $danger_color;
   }
 
   .todo-item {
@@ -84,8 +91,8 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    &.complete {
-      color: #a2a2a2;
+    &.completed {
+      color: $gray_color;
       .title {
         text-decoration: line-through;
       }
@@ -98,12 +105,12 @@
         font-size: 14px;
         color: #ccc;
         cursor: pointer;
-        transition: color .3s ease-in-out;
+        @include transition(color .3s ease);
         &:last-child {
           padding-right: 0;
         }
         &:hover {
-          color: #2c2c2c;
+          color: $dark_color;
         }
       }
     }
