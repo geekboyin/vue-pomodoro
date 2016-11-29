@@ -2,9 +2,9 @@
   <div class="clock-wrapper item-flex">
     <div class="clock">
       <div class="clock-countdown">
-        <span class="min" v-text="duration"></span>
+        <span class="min" v-text="mins"></span>
         <span class="sep">:</span>
-        <span class="sec">00</span>
+        <span class="sec" v-text="secs"></span>
       </div><!-- end .clock-countdown -->
 
       <div class="clock-action">
@@ -17,22 +17,21 @@
 
 <script>
   export default {
-    computed: {
-      duration () {
-        return this.$store.getters.duration
+    data () {
+      return {
+        duration: 25 * 60,
+        mins: '25',
+        secs: '00',
+        running: false,
+        pause: false
       }
     },
     methods: {
       start () {
         var timer = this.duration
         setInterval(() => {
-          let minutes = parseInt(timer / 60, 10)
-          let seconds = parseInt(timer % 60, 10)
-
-          let minText = minutes < 10 ? '0' + minutes : minutes
-          let secText = seconds < 10 ? '0' + seconds : seconds
-
-          console.log(minText + ':' + secText)
+          this.mins = parseInt(timer / 60, 10)
+          this.secs = parseInt(timer % 60, 10)
 
           if (--timer < 0) {
             console.log('done')
