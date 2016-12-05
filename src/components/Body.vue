@@ -21,12 +21,4 @@
 </script>
 
 <style lang="scss">
-  .body-flex {
-    display: flex;
-    justify-content: center;
-    flex-direction: row;
-    .item-flex {
-      flex-basis: 50%;
-    }
-  }
 </style>

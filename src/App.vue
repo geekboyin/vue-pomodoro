@@ -54,4 +54,39 @@ export default {
       color: $primary_color;
     }
   }
+
+  .navigation {
+    padding: 10px;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    display: none;
+    box-sizing: border-box;
+    a {
+      text-decoration: none;
+      color: $dark_color;
+      i.pos-left {
+        padding-right: 10px;
+      }
+      i.pos-right {
+        padding-left: 10px;
+      }
+    }
+    @media only screen
+    and (max-width: 414px) {
+      display: block;
+    }
+  }
+
+  .todo-wrapper .navigation {
+    background: #fff;
+  }
+
+  .clock-wrapper .navigation {
+    text-align: right;
+    right: 0;
+    a {
+      color: #fff;
+    }
+  }
 </style>
