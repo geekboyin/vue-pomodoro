@@ -32,7 +32,7 @@
 <script>
   import $ from 'jquery'
 
-  const DURATION = 5
+  const DURATION = 25 * 60
   export default {
     computed: {
       mins () {
