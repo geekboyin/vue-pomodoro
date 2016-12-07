@@ -32,7 +32,7 @@
 <script>
   import $ from 'jquery'
 
-  const DURATION = 25 * 60
+  const DURATION = 3
   export default {
     computed: {
       mins () {
@@ -86,6 +86,8 @@
             this.clockShake = true
             // start playing beep
             this.playBeep()
+            // show notification
+            this.showNotification()
             // clear interval of countdown
             clearInterval(this.timer)
             // increasing pomodoro count
@@ -107,6 +109,21 @@
         $('.clock-wrapper').removeClass('slide_right')
         $('.clock-wrapper').addClass('slide_left')
         $('.todo-wrapper').addClass('slide_left')
+      },
+      showNotification () {
+        window.Notification.requestPermission((result) => {
+          if (result === 'granted') {
+            navigator.serviceWorker.ready.then((registration) => {
+              console.log(1)
+              registration.showNotification('Vibration Sample', {
+                body: 'Buzz! Buzz!',
+                icon: '../images/touch/chrome-touch-icon-192x192.png',
+                vibrate: [200, 100, 200, 100, 200, 100, 200],
+                tag: 'vibration-sample'
+              })
+            })
+          }
+        })
       }
     },
     filters: {
