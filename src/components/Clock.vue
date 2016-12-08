@@ -32,7 +32,7 @@
 <script>
   import $ from 'jquery'
 
-  const DURATION = 3
+  const DURATION = 25 * 60
   export default {
     computed: {
       mins () {
@@ -49,7 +49,24 @@
         done: false,
         timer: null,
         pomodoroCount: 0,
-        clockShake: false
+        clockShake: false,
+        notiOptions: {
+          body: '',
+          title: 'Pomodoro App',
+          icon: '/static/images/icon.png'
+        }
+      }
+    },
+    created () {
+      // Request permission for notification
+      if (window.Notification && window.Notification.permission !== 'denied' && window.Notification.permission !== 'granted') {
+        window.Notification.requestPermission((permission) => {
+          if (permission === 'granted') {
+            this.notiOptions.body = 'Thank your for allowing notification.'
+            var n = new window.Notification(this.notiOptions.title, this.notiOptions)
+            n.close()
+          }
+        })
       }
     },
     mounted () {
@@ -84,14 +101,21 @@
           if (--timer < 0) {
             this.done = true
             this.clockShake = true
-            // start playing beep
-            this.playBeep()
-            // show notification
-            this.showNotification()
             // clear interval of countdown
             clearInterval(this.timer)
+
+            // start playing beep
+            this.playBeep()
+
             // increasing pomodoro count
             this.pomodoroCount++
+
+            // show notification
+            if (this.pomodoroCount % 4 === 0) {
+              this.showNotification('Let\'s take a 15 - 30 minutes break.')
+            } else {
+              this.showNotification('Let\'s take a short 5 minutes break.')
+            }
           } else {
             this.duration = timer
           }
@@ -110,20 +134,12 @@
         $('.clock-wrapper').addClass('slide_left')
         $('.todo-wrapper').addClass('slide_left')
       },
-      showNotification () {
-        window.Notification.requestPermission((result) => {
-          if (result === 'granted') {
-            navigator.serviceWorker.ready.then((registration) => {
-              console.log(1)
-              registration.showNotification('Vibration Sample', {
-                body: 'Buzz! Buzz!',
-                icon: '../images/touch/chrome-touch-icon-192x192.png',
-                vibrate: [200, 100, 200, 100, 200, 100, 200],
-                tag: 'vibration-sample'
-              })
-            })
-          }
-        })
+      showNotification (message) {
+        if (window.Notification.permission === 'granted') {
+          this.notiOptions.body = message
+          var n = new window.Notification(this.notiOptions.title, this.notiOptions)
+          n.close()
+        }
       }
     },
     filters: {
