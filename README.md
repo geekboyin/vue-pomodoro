@@ -1,6 +1,6 @@
 # vue-pomodoro
 
-> A Vue.js project
+> Another pomodoro clock with todo list, built with Vuejs.
 
 ## Build Setup
 
